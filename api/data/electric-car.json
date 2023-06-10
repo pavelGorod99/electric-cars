@@ -1,0 +1,25 @@
+{
+    "_id": "647d43a6dca2ebf2da0de4f4",
+    "name": "Model Y",
+    "company": "Tesla",
+    "year": 2021,
+    "manufacture": [
+        {
+            "country": "United States",
+            "state": "California",
+            "city": "Fremont",
+            "_id": "647d4d7fe03947634995e0a6"
+        },
+        {
+            "country": "China",
+            "city": "Shanghai",
+            "_id": "647d4d7fe03947634995e0a7"
+        },
+        {
+            "country": "China",
+            "city": "Peijin",
+            "_id": "647ffdf7abc7751e33eb079a"
+        }
+    ],
+    "__v": 0
+}
