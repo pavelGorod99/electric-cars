@@ -1,25 +1,152 @@
 {
-    "_id": "647d43a6dca2ebf2da0de4f4",
     "name": "Model Y",
     "company": "Tesla",
     "year": 2021,
     "manufacture": [
         {
             "country": "United States",
-            "state": "California",
-            "city": "Fremont",
-            "_id": "647d4d7fe03947634995e0a6"
+            "states": [
+                {
+                    "state": "California",
+                    "cities": [
+                        {
+                            "city":"Fremont"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "country": "China",
-            "city": "Shanghai",
-            "_id": "647d4d7fe03947634995e0a7"
-        },
-        {
-            "country": "China",
-            "city": "Peijin",
-            "_id": "647ffdf7abc7751e33eb079a"
+            "cities": [
+                {
+                    "city": "Shanghai"
+                },
+                {
+                    "city": "Peijin"
+                }
+            ]
         }
-    ],
-    "__v": 0
+    ]
 }
+
+{
+
+	"name": "Model Y",
+	"company": "Tesla",
+	"year": 2021,
+	"manufacture": [
+		{
+			"country": "United States",
+            "states": [
+                {
+                    "state": "California",
+                    "cities" [
+                        {
+                            "city": "Fremont"
+                        },
+                        {
+                            "city": "LA"
+                        },
+                        {
+                            "city": "San Diego"
+                        },
+                        {
+                            "city": "San Francisco"
+                        }
+                    ]
+                }
+            ]
+		},
+		{
+			"country": "China",
+            "cities": [
+                {
+                    "city": "Shanghai"
+                },
+                {
+                    "city": "Peijin"
+                }
+            ]
+		}
+	]
+}
+
+[
+    {
+        "name": "Model Y",
+        "company": "Tesla",
+        "year": 2021,
+        "manufacture": [
+            {
+                "country": "United States",
+                "state": "California",
+                "city": "Fremont"
+            },
+            {
+                "country": "China",
+                "city": "Shanghai"
+            }
+        ]
+    },
+    {
+        "name": "Model 3",
+        "company": "Tesla",
+        "year": 2021,
+        "manufacture": [
+            {
+                "country": "United States",
+                "state": "California",
+                "city": "Fremont"
+            },
+            {
+                "country": "China",
+                "city": "Shanghai"
+            },
+            {
+                "country": "Germany",
+                "city": "Grünheide"
+            }
+        ]
+    },
+    {
+        "name": "Leaf",
+        "company": "Nissan",
+        "year": 2021,
+        "manufacture": [
+            {
+                "country": "Japan",
+                "city": "Yokosuka"
+            },
+            {
+                "country": "Japan",
+                "city": "Fukuoka"
+            },
+            {
+                "country": "United Kingdom",
+                "city": "Sunderland"
+            },
+            {
+                "country": "United States",
+                "state": "Tennessee",
+                "city": "Smyrna"
+            }
+        ]
+    },
+    {
+        "name": "Escape Hybrid",
+        "company": "Ford",
+        "year": 2022,
+        "manufacture": [
+            {
+                "country": "United States",
+                "state": "Kentucky",
+                "city": "Louisville"
+            },
+            {
+                "country": "Mexico",
+                "city": "Hermosillo"
+            }
+        ]
+    }
+]

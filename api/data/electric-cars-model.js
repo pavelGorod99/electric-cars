@@ -12,13 +12,55 @@ const manufactureSchema= new mongoose.Schema([
         },
         city: {
             type: String,
-            required: true,
-            unique: true
+            required: true
         }
     }
 ]);
 
-const exelctricCarSchema= mongoose.Schema({
+// const manufactureSchema= new mongoose.Schema([
+//     {
+//         country: {
+//             type: String,
+//             required: true,
+//             unique: true
+//         },
+//         states: {
+//             type: [
+//                 {
+//                     state: {
+//                         type: String,
+//                         required: true,
+//                         unique: true
+//                     },
+//                     cities: [
+//                         {
+//                             city: {
+//                                 type: String,
+//                                 required: true,
+//                                 unique: true
+//                             }
+//                         }
+//                     ]
+//                 }
+//             ],
+//             required: false
+//         },
+//         cities: {
+//             type: [
+//                 {
+//                     city: {
+//                         type: String,
+//                         required: true,
+//                         unique: true
+//                     }
+//                 }
+//             ],
+//             required: false
+//         }
+//     }
+// ]);
+
+const electricCarSchema= mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -37,4 +79,4 @@ const exelctricCarSchema= mongoose.Schema({
     }
 });
 
-mongoose.model("ElectricCar", exelctricCarSchema, "electricCars");
+mongoose.model("ElectricCar", electricCarSchema, "electricCars");

@@ -24,6 +24,8 @@ const deleteElectricCarWithCallback= callbackify(function(electricCarId) {
 
 const getAll= function(req, res) {
 
+    console.log("GET ALL");
+
     let offset= parseFloat(process.env.DEFAULT_FIND_OFFSET);
     let count= parseFloat(process.env.DEFAULT_FIND_COUNT);
     const maxCount= parseInt(process.env.DEFAULT_FIND_MAX_LIMIT, 10);
@@ -116,10 +118,25 @@ const fullUpdateOne= function(req, res) {
             let manufactureArr= req.body.manufacture;
             for (let i = 0; i < manufactureArr.length; i++) {
                 electricCar.manufacture[i].country= manufactureArr[i].country;
-                if (manufactureArr[i].state != null) {
+                if (manufactureArr[i].states != null) {
                     electricCar.manufacture[i].state= manufactureArr[i].state;
-                }
+                    // let stateArr= manufactureArr[i].states;
+                    // for (let j = 0; j < stateArr.length; j++) {
+                    //     electricCar.manufacture[i].states[j].state= stateArr[j].state;
+                    //     let cityArr = stateArr[j].cities;
+                    //     for (let q = 0; q < cityArr.length; q++) {
+                    //         electricCar.manufacture[i].states[l].cities[q].city= cityArr[q].city;
+                    //     }
+                    // }
+                } 
                 electricCar.manufacture[i].city= manufactureArr[i].city;
+                // else {
+                //     // electricCar.manufacture[i].city= manufactureArr[i].city;
+                //     let cityArr= manufactureArr[i].cities;
+                //     for (let j = 0; j < cityArr.length; j++) {
+                //         electricCar.manufacture[i].cities[j].city = manufactureArr[i].cities[j].city;
+                //     }
+                // }
             }
         }
         _saveElectricCar(res, electricCar, response);
@@ -137,8 +154,31 @@ const partialUpdateOne= function(req, res) {
             let manufactureArr= req.body.manufacture;
             for (let i = 0; i < manufactureArr.length; i++) {
                 if (manufactureArr[i].country) { electricCar.manufacture[i].country= manufactureArr[i].country; }
-                if (manufactureArr[i].state) { electricCar.manufacture[i].state= manufactureArr[i].state; }
+                if (manufactureArr[i].states != null) { 
+                    electricCar.manufacture[i].state= manufactureArr[i].state; 
+                    
+                    // let stateArr= manufactureArr[i].states;
+                    // for (let j = 0; j < stateArr.length; j++) {
+                    //     electricCar.manufacture[i].states[j].state= stateArr[j].state;
+                    //     if (stateArr[j].cities != null) {
+                    //         let cityArr = stateArr[j].cities;
+                    //         for (let q = 0; q < cityArr.length; q++) {
+                    //             electricCar.manufacture[i].states[l].cities[q].city= cityArr[q].city;
+                    //         }
+                    //     }
+                    // }
+
+                }
+                
                 if (manufactureArr[i].city) { electricCar.manufacture[i].city= manufactureArr[i].city; }
+                
+                // else if (manufactureArr[i].cities) { 
+                //     // electricCar.manufacture[i].city= manufactureArr[i].city;
+                //     let cityArr= manufactureArr[i].cities;
+                //     for (let j = 0; j < cityArr.length; j++) {
+                //         electricCar.manufacture[i].cities[j].city = manufactureArr[i].cities[j].city;
+                //     }
+                // }
             }
         }
         _saveElectricCar(res, electricCar, response);
@@ -183,6 +223,7 @@ const _updateOne= function(req, res, updateElectricCarCallback) {
 }
 
 const buildElectricCar= function(req) {
+    console.log(req.body);
     const electricCar= {
         name: req.body.name,
         company: req.body.company,
@@ -196,9 +237,42 @@ const buildElectricCar= function(req) {
             electricCar.manufacture[i] = {};
             electricCar.manufacture[i].country = manufactureArr[i].country;
             if (manufactureArr[i].state != null) {
+                // FROM HERE
+                // let stateArr= manufactureArr[i].states;
+                // console.log("STATES ARRAY");
+                // console.log(stateArr);
+                // electricCar.manufacture[i].states= []
+                // for (let j = 0; j < stateArr.length; j++) {
+                //     console.log(stateArr[j].state);
+    
+                //     electricCar.manufacture[i].states[j]= {};
+
+                //     electricCar.manufacture[i].states[j].state= stateArr[j].state;
+                //     let cityArr = stateArr[j].cities;
+                //     electricCar.manufacture[i].states[j].cities= []
+                //     for (let q = 0; q < cityArr.length; q++) {
+                //         electricCar.manufacture[i].states[j].cities[q]= {};
+                //         electricCar.manufacture[i].states[j].cities[q].city= cityArr[q].city;
+                //     }
+                // }
+                // TO HERE, ALL ABOVE IS NEW VERSION
+
+                // OLD VERSION
                 electricCar.manufacture[i].state = manufactureArr[i].state;
-            }
-            electricCar.manufacture[i].city = manufactureArr[i].city;
+            } 
+            // FROM HERE
+            // else {
+            //     let cityArr= manufactureArr[i].cities;
+            //     electricCar.manufacture[i].cities= [];
+            //     for (let j = 0; j < cityArr.length; j++) {
+            //         electricCar.manufacture[i].cities[j]= {};
+            //         electricCar.manufacture[i].cities[j].city = manufactureArr[i].cities[j].city;
+            //     }
+            // }
+            // TO HERE NEW CODE VERION
+
+            // OLD VERSION
+            electricCar.manufacture[i].city= manufactureArr[i].city;
         }
     }
 

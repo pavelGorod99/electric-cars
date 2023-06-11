@@ -1,1 +1,6 @@
 <p>List of cars</p>
+<ul>
+    <li *ngFor="let electericCar of electricCars">
+        <a routerLink="{{electericCar._id}}">{{electericCar.company}} {{electericCar.name}}</a>
+    </li>
+</ul>

@@ -1,0 +1,23 @@
+<form [formGroup]="manufactureForm" (ngSubmit)="update(manufactureForm)" style="margin-top: 15px;">
+    <div>
+        <label>
+            Country:
+            <input formControlName="country">
+        </label>
+    </div>
+    <div *ngIf="manufacture.state">
+        <label>
+            State:
+            <input formControlName="state">
+        </label>
+    </div>
+    <div>
+        <label>
+            City:
+            <input formControlName="city">
+        </label>
+    </div>
+    <div style="margin-top: 15px;">
+        <button>Save</button>
+    </div>
+</form>

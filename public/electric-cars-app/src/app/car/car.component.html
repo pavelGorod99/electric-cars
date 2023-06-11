@@ -1,0 +1,49 @@
+<form [formGroup]="updateElectricCarForm" (ngSubmit)="update(updateElectricCarForm)">
+    <div>
+        <label>
+            Company:
+            <input formControlName="company">
+        </label>
+    </div>
+    <div>
+        <label>
+            Model:
+            <input formControlName="model">
+        </label>
+    </div>
+    <div>
+        <label>
+            Year:
+            <input formControlName="year">
+        </label>
+    </div>
+    <div style="margin-top: 15px; margin-bottom: 15px;">
+        <button>Save</button>
+        <button>Delete</button>
+    </div>
+</form>
+<div>
+    Manufactures:
+    <ul>
+        <li *ngFor="let manufacture of electricCar.manufacture" style="display: flex; flex-direction: column; margin-bottom: 15px;">
+            <div style="display: flex;">
+                <div style="width: 15%;">
+                    <div>
+                        Country: <span>{{manufacture.country}}</span>
+                    </div>
+                    <div *ngIf="manufacture.state">
+                        State: <span>{{manufacture.state}}</span>
+                    </div>
+                    <div>
+                        City: <span>{{manufacture.city}}</span>
+                    </div>
+                </div>
+                <div style="width: 30%;">
+                    <button routerLink="manufacture/{{manufacture._id}}">Edit</button>
+                    <button (click)="deleteManufacture(manufacture._id)">Delete</button>
+                </div>
+            </div>
+            <hr style="color: white; width: 25%">
+        </li>
+    </ul>
+</div>

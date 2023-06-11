@@ -8,6 +8,9 @@ import { RouterModule } from '@angular/router';
 import { NavigationComponent } from './navigation/navigation.component';
 import { FooterComponent } from './footer/footer.component';
 import { CarsComponent } from './cars/cars.component';
+import { CarComponent } from './car/car.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ManufactureComponent } from './manufacture/manufacture.component';
 
 @NgModule({
   declarations: [
@@ -15,11 +18,14 @@ import { CarsComponent } from './cars/cars.component';
     HomeComponent,
     NavigationComponent,
     FooterComponent,
-    CarsComponent
+    CarsComponent,
+    CarComponent,
+    ManufactureComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
+    ReactiveFormsModule,
     RouterModule.forRoot([
       {
         path: "",
@@ -28,6 +34,14 @@ import { CarsComponent } from './cars/cars.component';
       {
         path: "cars",
         component: CarsComponent
+      },
+      {
+        path: "cars/:carId",
+        component: CarComponent
+      },
+      {
+        path: "cars/:carId/manufacture/:manufactureId",
+        component: ManufactureComponent
       }
     ])
   ],
