@@ -20,5 +20,7 @@ export class ElectricCarService {
     return this._http.get<ElectricCar>(this.base_url+"electric-cars/"+_id);
   }
 
-  
+  createElectricCar(car: ElectricCar): Observable<ElectricCar> {
+    return this._http.post<ElectricCar>(this.base_url+"electric-cars", car.toJson());
+  }
 }

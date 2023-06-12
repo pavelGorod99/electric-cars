@@ -13,10 +13,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:4200");
-    res.header('Access-Control-Allow-Headers', 'Origin, XRequested-With, Content-Type, Accept');
-    res.header("Access-Control-Allow-Methods", "PUT");
-    res.header("Access-Control-Allow-Methods", "DELETE");
+    res.header("Access-Control-Allow-Origin", "http://localhost:4200");   
+    res.header("Access-Control-Allow-Headers", "content-type, authorization");   
+    res.header("Access-Control-Allow-Methods", "*");  
     next();
 });
 

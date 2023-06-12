@@ -11,6 +11,7 @@ import { CarsComponent } from './cars/cars.component';
 import { CarComponent } from './car/car.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ManufactureComponent } from './manufacture/manufacture.component';
+import { NewCarComponent } from './new-car/new-car.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ManufactureComponent } from './manufacture/manufacture.component';
     FooterComponent,
     CarsComponent,
     CarComponent,
-    ManufactureComponent
+    ManufactureComponent,
+    NewCarComponent
   ],
   imports: [
     BrowserModule,
@@ -34,6 +36,10 @@ import { ManufactureComponent } from './manufacture/manufacture.component';
       {
         path: "cars",
         component: CarsComponent
+      },
+      {
+        path: "cars/new-car",
+        component: NewCarComponent
       },
       {
         path: "cars/:carId",

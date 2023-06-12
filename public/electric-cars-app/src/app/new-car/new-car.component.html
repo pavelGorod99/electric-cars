@@ -1,0 +1,43 @@
+<p>new-car works!</p>
+
+<form [formGroup]="createElectricCarForm" (ngSubmit)="create(createElectricCarForm)">
+    <div>
+        <label>
+            Company:
+            <input formControlName="company">
+        </label>
+    </div>
+    <div>
+        <label>
+            Model:
+            <input formControlName="model">
+        </label>
+    </div>
+    <div>
+        <label>
+            Year:
+            <input type="number" formControlName="year">
+        </label>
+    </div>
+    <div>
+        Manufacture:
+        <div formArrayName="manufacture">
+            <div *ngFor="let manufactureGroup of manufacturies.controls; let i = index" [formGroupName]="i">
+                <div>
+                    <input formControlName="country" placeholder="Country">
+                </div>
+                <div>
+                    <input formControlName="state" placeholder="State">
+                </div>
+                <div>
+                    <input formControlName="city" placeholder="City">
+                </div>
+                <hr>
+            </div>
+        </div>
+        <button type="button" (click)="addManufacture()">Add Manufacture</button>
+    </div>
+    <div style="margin-top: 15px; margin-bottom: 15px;">
+        <button>Create</button>
+    </div>
+</form>
