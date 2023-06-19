@@ -73,7 +73,7 @@ const electricCarSchema= mongoose.Schema({
         type: Number,
         required: true
     },
-    manufacture: {
+    manufactures: {
         type: [manufactureSchema],
         required: false
     }

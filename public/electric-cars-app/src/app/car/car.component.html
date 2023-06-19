@@ -1,4 +1,4 @@
-<form [formGroup]="updateElectricCarForm" (ngSubmit)="update(updateElectricCarForm)">
+<form [formGroup]="updateElectricCarForm" (ngSubmit)="updateCar(updateElectricCarForm)">
     <div>
         <label>
             Company:
@@ -8,7 +8,7 @@
     <div>
         <label>
             Model:
-            <input formControlName="model">
+            <input formControlName="name">
         </label>
     </div>
     <div>
@@ -18,14 +18,15 @@
         </label>
     </div>
     <div style="margin-top: 15px; margin-bottom: 15px;">
-        <button>Save</button>
-        <button>Delete</button>
+        <button type="submit">Save</button>
+        <button type="button" (click)="deleteCar()">Delete</button>
     </div>
 </form>
+<button routerLink="new-manufacture">Add a manufacture</button>
 <div>
     Manufactures:
     <ul>
-        <li *ngFor="let manufacture of electricCar.manufacture" style="display: flex; flex-direction: column; margin-bottom: 15px;">
+        <li *ngFor="let manufacture of electricCar.manufactures; let i = index" style="display: flex; flex-direction: column; margin-bottom: 15px;">
             <div style="display: flex;">
                 <div style="width: 15%;">
                     <div>

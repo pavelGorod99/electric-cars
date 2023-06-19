@@ -67,22 +67,22 @@ export class ElectricCar {
   #name!: string;
   #company!: string;
   #year!: number;
-  #manufacture!: Manufacture[];
+  #manufactures!: Manufacture[];
 
   get _id() { return this.#_id; }
   get name() { return this.#name; }
   get company() { return this.#company; }
   get year() { return this.#year; }
-  get manufacture(): Manufacture[] { return this.#manufacture; }
+  get manufactures(): Manufacture[] { return this.#manufactures; }
 
   set _id(_id: string) { this.#_id= _id; }
   set name(name: string) { this.#name= name; }
   set company(company: string) { this.#company= company; }
   set year(year: number) { this.#year= year; }
-  set manufacture(manufacture: Manufacture[]) { this.#manufacture= manufacture; }
+  set manufactures(manufactures: Manufacture[]) { this.#manufactures= manufactures; }
 
   setNewManufacture(manufacture: Manufacture) {
-    this.#manufacture.push(manufacture);
+    this.#manufactures.push(manufacture);
   }
 
   toJson() {
@@ -90,7 +90,7 @@ export class ElectricCar {
       name: this.name,
       company: this.company,
       year: this.year,
-      manufacture: this.manufacture
+      manufactures: this.manufactures
     }
   }
 }

@@ -12,6 +12,10 @@ import { CarComponent } from './car/car.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ManufactureComponent } from './manufacture/manufacture.component';
 import { NewCarComponent } from './new-car/new-car.component';
+import { NewManufactureComponent } from './new-manufacture/new-manufacture.component';
+import { LoginComponent } from './login/login.component';
+import { RegistrationComponent } from './registration/registration.component';
+// import { OrderPipe } from './order.pipe';
 
 @NgModule({
   declarations: [
@@ -22,7 +26,11 @@ import { NewCarComponent } from './new-car/new-car.component';
     CarsComponent,
     CarComponent,
     ManufactureComponent,
-    NewCarComponent
+    NewCarComponent,
+    NewManufactureComponent,
+    LoginComponent,
+    RegistrationComponent,
+    // OrderPipe
   ],
   imports: [
     BrowserModule,
@@ -32,6 +40,14 @@ import { NewCarComponent } from './new-car/new-car.component';
       {
         path: "",
         component: HomeComponent
+      },
+      {
+        path: "login",
+        component: LoginComponent
+      },
+      {
+        path: "registration",
+        component: RegistrationComponent
       },
       {
         path: "cars",
@@ -44,6 +60,10 @@ import { NewCarComponent } from './new-car/new-car.component';
       {
         path: "cars/:carId",
         component: CarComponent
+      },
+      {
+        path: "cars/:carId/new-manufacture",
+        component: NewManufactureComponent
       },
       {
         path: "cars/:carId/manufacture/:manufactureId",

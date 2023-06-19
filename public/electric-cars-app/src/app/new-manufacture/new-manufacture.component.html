@@ -1,0 +1,36 @@
+<p>new-manufacture works!</p>
+<div>
+    New manufacture:
+    <form [formGroup]="createManufactureForm" (ngSubmit)="onCreate(createManufactureForm)">
+        <div>
+            Manufacture:
+            <div formArrayName="manufactures">
+                <div *ngFor="let manufactureGroup of manufactures.controls; let i = index" [formGroupName]="i">
+                    <div>
+                        <input formControlName="country" placeholder="Country">
+                    </div>
+                    <div>Show State input
+                        <input type="checkbox" name="stateField{{i}}" (change)="showStateInput(i)">
+                    </div>
+                    <div *ngIf="stateInput[i]">
+                        <input formControlName="state" placeholder="State">
+                    </div>
+                    <div>
+                        <input formControlName="city" placeholder="City">
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <button type="button" (click)="addManufacture()">Add Manufacture</button>
+        </div>
+        <div *ngIf="formErrorMsg != ''">
+            {{formErrorMsg}}
+        </div>
+        <div *ngIf="formSuccessMsg != ''">
+            {{formSuccessMsg}}
+        </div>
+        <div style="margin-top: 15px; margin-bottom: 15px;">
+            <button>Create</button>
+        </div>
+    </form>
+</div>

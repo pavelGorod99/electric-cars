@@ -51,7 +51,7 @@ const getAll= function(req, res) {
         if (err) {
             res.status(500).json(err);
         } else {
-            res.json(electricCars);
+            res.status(200).json(electricCars);
         }
     });
 }
@@ -68,7 +68,7 @@ const getOne= function(req, res) {
             response.message= err;
         } else if (!electricCar) {
             response.status= 400;
-            response.message= { "message": "Electric car ID not found" };
+            response.message= "Electric car ID not found";
         }
         res.status(response.status).json(response.message);
     });
@@ -79,7 +79,7 @@ const addOne= function(req, res) {
     const newElectricCar= buildElectricCar(req);
 
     createElectricCarWithCallback(newElectricCar, function(err, electricCar) {
-        const response= { status: 201, message: electricCar };
+        const response= { status: 201, message: "Electric car was created successfully!" };
         if (err) {
             response.status= 500;
             response.message= err;
@@ -92,17 +92,15 @@ const deleteOne= function(req, res) {
     const electricCarId= req.params.electricCarId;
     deleteElectricCarWithCallback(electricCarId, function(err, deletedElectricCar) {
         const response= {
-            status: 204,
-            message: deletedElectricCar
+            status: 200,
+            message: "Electric car was deleted successfully!"
         };
         if (err) {
             response.status= 500;
             response.message= err;
         } else if (!deletedElectricCar) {
             response.status= 404;
-            response.message= {
-                "message": "Electric car ID not found"
-            };
+            response.message= "Electric car ID not found";
         }
         res.status(response.status).json(response.message);
     });
@@ -114,12 +112,12 @@ const fullUpdateOne= function(req, res) {
         electricCar.company= req.body.company;
         electricCar.year= req.body.year;
 
-        if (req.body.manufacture.length > 0) {
-            let manufactureArr= req.body.manufacture;
+        if (req.body.manufactures.length > 0) {
+            let manufactureArr= req.body.manufactures;
             for (let i = 0; i < manufactureArr.length; i++) {
-                electricCar.manufacture[i].country= manufactureArr[i].country;
+                electricCar.manufactures[i].country= manufactureArr[i].country;
                 if (manufactureArr[i].states != null) {
-                    electricCar.manufacture[i].state= manufactureArr[i].state;
+                    electricCar.manufactures[i].state= manufactureArr[i].state;
                     // let stateArr= manufactureArr[i].states;
                     // for (let j = 0; j < stateArr.length; j++) {
                     //     electricCar.manufacture[i].states[j].state= stateArr[j].state;
@@ -129,7 +127,7 @@ const fullUpdateOne= function(req, res) {
                     //     }
                     // }
                 } 
-                electricCar.manufacture[i].city= manufactureArr[i].city;
+                electricCar.manufactures[i].city= manufactureArr[i].city;
                 // else {
                 //     // electricCar.manufacture[i].city= manufactureArr[i].city;
                 //     let cityArr= manufactureArr[i].cities;
@@ -150,12 +148,12 @@ const partialUpdateOne= function(req, res) {
         if (req.body.company) { electricCar.company= req.body.company; }
         if (req.body.year) { electricCar.year= req.body.year; }
     
-        if (req.body.manufacture && req.body.manufacture.length > 0) {
-            let manufactureArr= req.body.manufacture;
+        if (req.body.manufactures && req.body.manufactures.length > 0) {
+            let manufactureArr= req.body.manufactures;
             for (let i = 0; i < manufactureArr.length; i++) {
-                if (manufactureArr[i].country) { electricCar.manufacture[i].country= manufactureArr[i].country; }
+                if (manufactureArr[i].country) { electricCar.manufactures[i].country= manufactureArr[i].country; }
                 if (manufactureArr[i].states != null) { 
-                    electricCar.manufacture[i].state= manufactureArr[i].state; 
+                    electricCar.manufactures[i].state= manufactureArr[i].state; 
                     
                     // let stateArr= manufactureArr[i].states;
                     // for (let j = 0; j < stateArr.length; j++) {
@@ -170,7 +168,7 @@ const partialUpdateOne= function(req, res) {
 
                 }
                 
-                if (manufactureArr[i].city) { electricCar.manufacture[i].city= manufactureArr[i].city; }
+                if (manufactureArr[i].city) { electricCar.manufactures[i].city= manufactureArr[i].city; }
                 
                 // else if (manufactureArr[i].cities) { 
                 //     // electricCar.manufacture[i].city= manufactureArr[i].city;
@@ -188,6 +186,7 @@ const partialUpdateOne= function(req, res) {
 
 const _saveElectricCar= function(res, electricCar, response) {
     saveElectricCarWithCallback(electricCar, function(err, updatedElectricCar) {
+        response.message= "Electric car was updated sucessfully!";
         if (err) {
             response.status= 500;
             response.message= err;
@@ -202,7 +201,7 @@ const _updateOne= function(req, res, updateElectricCarCallback) {
     console.log("Electric car id", electricCarId);
     findElectricCarByIdWithCallback(electricCarId, function(err, electricCar) {
         const response= {
-            status: 204,
+            status: 200,
             message: electricCar
         };
         if (err) {
@@ -210,11 +209,9 @@ const _updateOne= function(req, res, updateElectricCarCallback) {
             response.message= err;
         } else if (!electricCar) {
             response.status= 404;
-            response.message= {
-                "message": "Electric car ID not found"
-            }
+            response.message= "Electric car ID not found";
         }
-        if (response.status !== 204) {
+        if (response.status !== 200) {
             res.status(response.status).json(response.message);
         } else {
             updateElectricCarCallback(req, res, electricCar, response);
@@ -228,14 +225,14 @@ const buildElectricCar= function(req) {
         name: req.body.name,
         company: req.body.company,
         year: req.body.year,
-        manufacture: []
+        manufactures: []
     };
 
-    if (req.body.manufacture.length > 0) {
-        let manufactureArr= req.body.manufacture;
+    if (req.body.manufactures.length > 0) {
+        let manufactureArr= req.body.manufactures;
         for (let i = 0; i < manufactureArr.length; i++) {
-            electricCar.manufacture[i] = {};
-            electricCar.manufacture[i].country = manufactureArr[i].country;
+            electricCar.manufactures[i] = {};
+            electricCar.manufactures[i].country = manufactureArr[i].country;
             if (manufactureArr[i].state != null) {
                 // FROM HERE
                 // let stateArr= manufactureArr[i].states;
@@ -258,7 +255,7 @@ const buildElectricCar= function(req) {
                 // TO HERE, ALL ABOVE IS NEW VERSION
 
                 // OLD VERSION
-                electricCar.manufacture[i].state = manufactureArr[i].state;
+                electricCar.manufactures[i].state = manufactureArr[i].state;
             } 
             // FROM HERE
             // else {
@@ -272,7 +269,7 @@ const buildElectricCar= function(req) {
             // TO HERE NEW CODE VERION
 
             // OLD VERSION
-            electricCar.manufacture[i].city= manufactureArr[i].city;
+            electricCar.manufactures[i].city= manufactureArr[i].city;
         }
     }
 

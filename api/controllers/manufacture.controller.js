@@ -1,66 +1,6 @@
 const mongoose = require("mongoose");
 const ElectricCar = mongoose.model(process.env.ELECTRIC_CAR_MODEL);
 
-const callbackify = require("util").callbackify;
-
-const getElectricCarByIdWithCallback = callbackify(function (electricCarId) {
-    return ElectricCar.findById(electricCarId).exec();
-});
-
-const getAllManufacturesForElectricCarWithCallback = callbackify(function (electricCarId) {
-    return ElectricCar.findById(electricCarId).select("manufacture").exec();
-});
-
-const saveElectricCarWithCallback = callbackify(function (electricCar) {
-    return electricCar.save();
-});
-
-const getOneManufacturerByIdWithCallback = callbackify(function (electricCarId, manufactureId) {
-    return ElectricCar.findOne(
-        {
-            _id: electricCarId,
-            'manufacture._id': manufactureId
-        },
-        {
-            'manufacture.$': 1
-        }
-    );
-});
-
-const deleteManufactureByIdWithCallback = callbackify(function (electricCarId, manufactureId) {
-    return ElectricCar.updateOne(
-        { _id: electricCarId },
-        { $pull: { manufacture: { _id: manufactureId } } }
-    );
-});
-
-const _checkIfThereIsInternalServerError = function (err, message, successStatusCode) {
-    const response = {
-        status: successStatusCode,
-        message: { message }
-    }
-    if (err) {
-        response.status = process.env.INTERNAL_SERVER_ERROR_STATUS_CODE;
-        response.message = { "err": err };
-    }
-    return response;
-}
-
-const _checkResultForError = function (err, result, successStatusCode, notFoundMessage) {
-
-    const response = _checkIfThereIsInternalServerError(err, result, successStatusCode);
-
-    if (response.status !== process.env.INTERNAL_SERVER_ERROR_STATUS_CODE && !result) {
-        response.status = process.env.OBJECT_NOT_FOUND_STATUS_CODE;
-        response.message = {
-            "message": notFoundMessage
-        }
-    }
-    return response;
-}
-
-
-
 const _createResponseObject= function() {
     const response= {
         status: process.env.SUCCESS_STATUS_CODE,
@@ -69,11 +9,9 @@ const _createResponseObject= function() {
     return response;
 }
 
-const _setErrResponse= function(err, response, statusCode) {
-    if (err) {
-        response.status= statusCode;
-        response.message= {"err": err};
-    }
+const _setResponse= function(statusCode, message, response) {
+    response.status= statusCode;
+    response.message= message;
     return response;
 }
 
@@ -89,40 +27,40 @@ const getOne = function (req, res) {
     ElectricCar.findOne(
         {
             _id: electricCarId,
-            'manufacture._id': manufactureId
+            'manufactures._id': manufactureId
         },
         {
-            'manufacture.$': 1
+            'manufactures.$': 1
         }
     ).exec()
-    .then((electricCar) => {
-        response.message= electricCar.manufacture[0];
-    }).catch((err) => {
-        _setErrResponse(err, response, process.env.INTERNAL_SERVER_ERROR_STATUS_CODE);
-    }).finally(() => {
-        _sendResponse(res, response);
-    });
+    .then((electricCar) => response.message= electricCar.manufactures[0])
+    .catch((err) => _setResponse(process.env.INTERNAL_SERVER_ERROR_STATUS_CODE, { "err": err }, response))
+    .finally(() => _sendResponse(res, response));
 }
 
 const getAll = function (req, res) {
     const electricCarId = req.params.electricCarId;
     const response= _createResponseObject();
     ElectricCar.findById(electricCarId)
-        .select("manufacture")
+        .select("manufactures")
         .exec()
-        .then((electricCar) => {
+        .then((electricCar) => _checkIfElectricCarExists(electricCar, response))
+        .then((electricCar) => response.message= electricCar.manufactures)
+        .catch((err) => _setResponse(process.env.INTERNAL_SERVER_ERROR_STATUS_CODE, { "err": err }, response))
+        .finally(() => _sendResponse(res, response));
+}
 
-            if (!electricCar) {
-                response.status= process.env.OBJECT_NOT_FOUND_STATUS_CODE;
-                response.message= process.env.ELECTRIC_CAR_ID_NOT_FOUND_MSG;
-            }
-
-            response.message= electricCar.manufacture
-        }).catch((err) => {
-            _setErrResponse(err, response, process.env.INTERNAL_SERVER_ERROR_STATUS_CODE);
-        }).finally(() => {
-            _sendResponse(res, response);
-        });
+const _checkIfAnyObjectWasModified= function(responseInfo, response) {
+    return new Promise((resolve, reject) => {
+        if (responseInfo.modifiedCount == 0) {
+            response.status= process.env.OBJECT_NOT_FOUND_STATUS_CODE;
+            response.message= process.env.MANUFACTURE_NOT_FOUND_MSG;
+            reject(response);
+        } else {
+            response.message= process.env.MANUFACTURE_DELETED_MSG
+            resolve(response);
+        }
+    })
 }
 
 const deleteOne = function (req, res) {
@@ -132,26 +70,15 @@ const deleteOne = function (req, res) {
 
     ElectricCar.updateOne(
         { _id: electricCarId },
-        { $pull: { manufacture: { _id: manufactureId } } }
+        { $pull: { manufactures: { _id: manufactureId } } }
     ).exec()
-    .then((responseInfo) => {
-
-        if (responseInfo.modifiedCount == 0) {
-            response.status= process.env.OBJECT_NOT_FOUND_STATUS_CODE;
-            response.message= process.env.MANUFACTURE_NOT_FOUND_MSG;
-        } else {
-            response.status= process.env.NO_CONTENT_STATUS_CODE;
-            response.message= process.env.MANUFACTURE_DELETED_MSG;
-        }
-    }).catch((err) => {
-        _setErrResponse(err, response, process.env.INTERNAL_SERVER_ERROR_STATUS_CODE);
-    }).finally(() => {
-        _sendResponse(res, response);
-    });
+    .then((responseInfo) => _checkIfAnyObjectWasModified(responseInfo, response))
+    .catch((err) => _setResponse(process.env.INTERNAL_SERVER_ERROR_STATUS_CODE, { "err": err }, response))
+    .finally(() => _sendResponse(res, response));
 }
 
-const _checkIfManufactureExistsAndReturnIt= function(res, electricCar, manufactureId, response) {
-    const updateManufacture = electricCar.manufacture.id(manufactureId);
+const _checkIfManufactureExistsAndReturnIt= function(electricCar, manufactureId, response) {
+    const updateManufacture = electricCar.manufactures.id(manufactureId);
     if (!updateManufacture) {
         response.status= process.env.OBJECT_NOT_FOUND_STATUS_CODE;
         response.message= process.env.MANUFACTURE_ID_NOT_FOUND_MSG;
@@ -160,7 +87,7 @@ const _checkIfManufactureExistsAndReturnIt= function(res, electricCar, manufactu
 }
 
 const partiallyUpdateOne = function (req, res) {
-    const updateManufacture = function (req, res, electricCar, response) {
+    const updateManufacture = function (req, electricCar, response) {
         const manufactureId = req.params.manufactureId;
         const updateManufacture = electricCar.manufacture.id(manufactureId);
 
@@ -168,15 +95,15 @@ const partiallyUpdateOne = function (req, res) {
         if (req.body.state) { updateManufacture.state = req.body.state; }
         if (req.body.city) { updateManufacture.city = req.body.city; }
 
-        _saveElectricCar(res, electricCar, response);
+        _saveElectricCar(electricCar);
     }
     _updateOne(req, res, updateManufacture);
 }
 
 const fullUpdateOne = function (req, res) {
-    const updateManufacture = function (req, res, electricCar, response) {
+    const updateManufacture = function (req, electricCar, response) {
         const manufactureId = req.params.manufactureId;
-        const updateManufacture = _checkIfManufactureExistsAndReturnIt(res, electricCar, manufactureId, response);
+        const updateManufacture = _checkIfManufactureExistsAndReturnIt(electricCar, manufactureId, response);
 
         if (updateManufacture != null) {
             updateManufacture.country = req.body.country;
@@ -185,7 +112,7 @@ const fullUpdateOne = function (req, res) {
             }
             updateManufacture.city = req.body.city;
     
-            _saveElectricCar(electricCar, response);
+            _saveElectricCar(electricCar);
         }
     }
     _updateOne(req, res, updateManufacture);
@@ -198,30 +125,25 @@ const _updateOne = function (req, res, updateManufactureCallback) {
 
     ElectricCar.findById(electricCarId)
         .exec()
+        .then((electricCar) => _checkIfElectricCarExists(electricCar, response))
+        .then((electricCar) => updateManufactureCallback(req, electricCar, response))
         .then((electricCar) => {
             
             if (!electricCar) {
                 response.status= process.env.OBJECT_NOT_FOUND_STATUS_CODE;
                 response.message= process.env.ELECTRIC_CAR_ID_NOT_FOUND_MSG;
             } else {
-                updateManufactureCallback(req, res, electricCar, response);
+                updateManufactureCallback(req, electricCar, response);
             }
         }).catch((err) => {
-            _setErrResponse(err, response, process.env.INTERNAL_SERVER_ERROR_STATUS_CODE);
+            _setResponse(process.env.INTERNAL_SERVER_ERROR_STATUS_CODE, { "err": err }, response);
         }).finally(() => {
             _sendResponse(res, response);
         })
 }
 
-function _saveElectricCar(electricCar, response) {
-
+function _saveElectricCar(electricCar) {
     return electricCar.save();
-        // .then((responseInfo) => {
-        //     console.log(responseInfo);
-        //     response.message= process.env.ELECTRIC_CAR_UPDATED_SUCCESSFULLY_MSG;
-        // }).catch((err) => {
-        //     _setErrResponse(err, response, process.env.INTERNAL_SERVER_ERROR_STATUS_CODE);
-        // });
 }
 
 const _checkIfElectricCarExists= function(electricCar, response) {
@@ -236,19 +158,46 @@ const _checkIfElectricCarExists= function(electricCar, response) {
     });
 }
 
-const _buildNewManufacture= function(req, electricCar) {
-    const manufactureArr = electricCar.manufacture;
+const _buildNewManufacture= function(body, electricCar) {
+    const manufactureArr = electricCar.manufactures;
     let newIndex = manufactureArr.length;
     const newManufacture = {};
 
-    newManufacture.country = req.body.country;
-    if (req.body.state) {
-        newManufacture.state = req.body.state;
+    newManufacture.country = body.country;
+    if (body.state && body.state != "") {
+        newManufacture.state = body.state;
     }
-    newManufacture.city = req.body.city;
+    newManufacture.city = body.city;
 
     manufactureArr[newIndex] = newManufacture;
-    electricCar.manufacture = manufactureArr;
+    electricCar.manufactures = manufactureArr;
+    return new Promise((resolve, reject) => {
+        resolve(electricCar);
+    });
+}
+
+const _buildEachManufacture= function(manufactureArr, electricCar) {
+    for (let i= 0; i < manufactureArr.length; i++) {
+        _buildNewManufacture(manufactureArr[i], electricCar);
+    }
+    return new Promise((resolve, reject) => {
+        resolve(electricCar);
+    });
+}
+
+const createMany= function(req, res) {
+    const electricCarId= req.params.electricCarId;
+    const response= _createResponseObject();
+    const manufactureArr= req.body.manufactures;
+    ElectricCar.findById(electricCarId)
+        .select("manufactures")
+        .exec()
+        .then((electricCar) => _checkIfElectricCarExists(electricCar))
+        .then((electricCar) => _buildEachManufacture(manufactureArr, electricCar))
+        .then((electricCar) => _saveElectricCar(electricCar))
+        .then(() => _setResponse(process.env.SUCCESS_STATUS_CODE, { message: "Manufactures created successfully!" }, response))
+        .catch((err) => _setResponse(process.env.INTERNAL_SERVER_ERROR_STATUS_CODE, { "err": err }, response))
+        .finally(() => _sendResponse(res, response));
 }
 
 const createOne = function (req, res) {
@@ -259,24 +208,10 @@ const createOne = function (req, res) {
         .select("manufacture")
         .exec()
         .then((electricCar) => _checkIfElectricCarExists(electricCar))
-        .then((req, electricCar) => {
-            _buildNewManufacture(req, electricCar);
-            _saveElectricCar(electricCar, response);
-        })
-        .catch((err) => {
-            _setErrResponse(err, response, process.env.INTERNAL_SERVER_ERROR_STATUS_CODE);
-        }).finally(() => {
-            _sendResponse(res, response);
-        });
-
-        // .then((electricCar) => {
-        //     if (!electricCar) {
-        //         response.status= process.env.OBJECT_NOT_FOUND_STATUS_CODE;
-        //         response.message= process.env.ELECTRIC_CAR_ID_NOT_FOUND_MSG;
-        //     } else {
-                
-        //     }
-        // })
+        .then((req, electricCar) => _buildNewManufacture(req.body, electricCar))
+        .then((electricCar) => _saveElectricCar(electricCar))
+        .catch((err) =>  _setResponse(process.env.INTERNAL_SERVER_ERROR_STATUS_CODE, { "err": err }, response))
+        .finally(() => _sendResponse(res, response));
 }
 
 module.exports = {
@@ -285,5 +220,6 @@ module.exports = {
     createOne,
     deleteOne,
     fullUpdateOne,
-    partiallyUpdateOne
+    partiallyUpdateOne,
+    createMany
 }

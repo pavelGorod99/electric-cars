@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Manufacture } from '../cars/cars.component';
+import { ElectricCar, Manufacture } from '../cars/cars.component';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -22,5 +22,9 @@ export class ManufactureService {
 
   deleteManufactureById(electricCarId:string, manufactureId: string): Observable<Manufacture> {
     return this.http.delete<Manufacture>(this.base_url + electricCarId + "/manufacture/" + manufactureId);
+  }
+
+  createManufactures(electricCar: Partial<ElectricCar>) {
+    return this.http.post(this.base_url+electricCar._id+"/manufactures", electricCar);
   }
 }

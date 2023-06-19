@@ -1,4 +1,4 @@
-<p>new-car works!</p>
+<h3>Create a car</h3>
 
 <form [formGroup]="createElectricCarForm" (ngSubmit)="create(createElectricCarForm)">
     <div>
@@ -9,8 +9,8 @@
     </div>
     <div>
         <label>
-            Model:
-            <input formControlName="model">
+            Name:
+            <input formControlName="name">
         </label>
     </div>
     <div>
@@ -20,13 +20,16 @@
         </label>
     </div>
     <div>
-        Manufacture:
-        <div formArrayName="manufacture">
-            <div *ngFor="let manufactureGroup of manufacturies.controls; let i = index" [formGroupName]="i">
+        Manufactures:
+        <div formArrayName="manufactures">
+            <div *ngFor="let manufactureGroup of manufactures.controls; let i = index" [formGroupName]="i">
                 <div>
                     <input formControlName="country" placeholder="Country">
                 </div>
-                <div>
+                <div>Show State input
+                    <input type="checkbox" name="stateField{{i}}" (change)="showStateInput(i)">
+                </div>
+                <div *ngIf="stateInput[i]">
                     <input formControlName="state" placeholder="State">
                 </div>
                 <div>
@@ -36,6 +39,12 @@
             </div>
         </div>
         <button type="button" (click)="addManufacture()">Add Manufacture</button>
+    </div>
+    <div *ngIf="formErrorMsg != ''">
+        {{formErrorMsg}}
+    </div>
+    <div *ngIf="formSuccessMsg != ''">
+        {{formSuccessMsg}}
     </div>
     <div style="margin-top: 15px; margin-bottom: 15px;">
         <button>Create</button>

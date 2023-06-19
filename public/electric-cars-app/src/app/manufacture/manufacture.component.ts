@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ManufactureService } from '../services/manufacture.service';
 import { Manufacture } from '../cars/cars.component';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -18,7 +18,10 @@ export class ManufactureComponent implements OnInit {
   #manufactureForm!: FormGroup;
   get manufactureForm() { return this.#manufactureForm; }
 
-  constructor(private route: ActivatedRoute, private manufactureService: ManufactureService, private formBuilder: FormBuilder) {
+  constructor(private route: ActivatedRoute, 
+              private manufactureService: ManufactureService, 
+              private formBuilder: FormBuilder,
+              private router: Router) {
     this.manufacture= new Manufacture();
   }
 
@@ -55,7 +58,7 @@ export class ManufactureComponent implements OnInit {
       });
   }
 
-  update(form: FormGroup) {
+  onUdate(form: FormGroup) {
     console.log(form);
     const manufacture= new Manufacture();
     manufacture.fillFromFormGroup(form);
@@ -64,6 +67,7 @@ export class ManufactureComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log(response);
+          this.router.navigate(['cars', this.#electricCarId]);
         },
         error: (err) => {
           console.log(err);

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ElectricCarService } from '../services/electric-car.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ElectricCar } from '../cars/cars.component';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ManufactureService } from '../services/manufacture.service';
@@ -20,6 +20,7 @@ export class CarComponent implements OnInit {
   get updateElectricCarForm() { return this.#updateElectricCarForm; }
 
   constructor(private route: ActivatedRoute, 
+              private router: Router,
               private formBuilder: FormBuilder, 
               private electricCarService: ElectricCarService,
               private manufactureService: ManufactureService) {
@@ -30,7 +31,7 @@ export class CarComponent implements OnInit {
     const electricCarId= this.route.snapshot.params["carId"];
     this.#updateElectricCarForm= this.formBuilder.group({
       company: "",
-      model: "",
+      name: "",
       year: ""
     });
     this.getElectricCarById(electricCarId);
@@ -45,11 +46,11 @@ export class CarComponent implements OnInit {
 
           this.#updateElectricCarForm= this.formBuilder.group({
             company: electricCar.company,
-            model: electricCar.name,
+            name: electricCar.name,
             year: electricCar.year
           });
 
-          console.log(this.#updateElectricCarForm);
+          // console.log(this.#updateElectricCarForm);
         },
         error: (err) => {
           console.log(err);
@@ -57,8 +58,59 @@ export class CarComponent implements OnInit {
       });
   }
 
-  update(form: FormGroup) {
+  buildPartiallyUpdatedElecticCar(form: FormGroup) {
+    return {
+      _id: this.electricCar._id,
+      company: form.value.company,
+      name: form.value.model,
+      year: form.value.year
+    };
+  }
 
+  fillFromFormGroupPartiallyElectricCar(form: FormGroup) {
+    const partiallyElectricCar: Partial<ElectricCar> = {
+      _id: this.electricCar._id,
+      company: form.value.company,
+      name: form.value.name,
+      year: form.value.year
+    }
+
+    return partiallyElectricCar;
+  }
+ 
+  updateCar(form: FormGroup) {
+    // console.log(form.value);
+
+    const partiallyUpdatedElectricCar= this.fillFromFormGroupPartiallyElectricCar(form);
+    // console.log(partiallyUpdatedElectricCar);
+    
+    this.electricCarService.updatePartiallyElectricCar(partiallyUpdatedElectricCar)
+      .subscribe({
+        next: (response) => {
+
+          
+          console.log(response);
+          
+          
+          this.getElectricCarById(this.electricCar._id);
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+  }
+
+  deleteCar() {
+    console.log(this.electricCar._id);
+    this.electricCarService.deleteElectricCarById(this.electricCar._id)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/cars']);
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
   }
 
   deleteManufacture(maunfactureId: string) {

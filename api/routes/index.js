@@ -17,6 +17,9 @@ router.route("/electric-cars/:electricCarId/manufacture")
     .get(manufactureController.getAll)
     .post(manufactureController.createOne);
 
+router.route("/electric-cars/:electricCarId/manufactures")
+    .post(manufactureController.createMany);
+
 router.route("/electric-cars/:electricCarId/manufacture/:manufactureId")
     .get(manufactureController.getOne)
     .delete(manufactureController.deleteOne)

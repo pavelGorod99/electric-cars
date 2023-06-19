@@ -12,21 +12,26 @@ export class NewCarComponent implements OnInit {
 
   electricCar!: ElectricCar;
 
+  stateInput!: boolean[];
+
   #createElectricCarForm!: FormGroup;
   get createElectricCarForm() { return this.#createElectricCarForm; }
 
   constructor(private formBuilder: FormBuilder,
-    private electricCarService: ElectricCarService) {}
+              private electricCarService: ElectricCarService) {
+      this.stateInput = [];
+  }
 
   ngOnInit(): void {
     this.#createElectricCarForm= this.formBuilder.group({
       company: "",
-      model: "",
+      name: "",
       year: "",
-      manufacture: this.formBuilder.array([
+      manufactures: this.formBuilder.array([
         this.createManufactureGroup()
       ])
     });
+    this.stateInput.push(false);
   }
 
   createManufactureGroup() {
@@ -38,33 +43,79 @@ export class NewCarComponent implements OnInit {
   }
 
   addManufacture() {
-    this.manufacturies.push(this.createManufactureGroup());
+    this.manufactures.push(this.createManufactureGroup());
   }
 
   removeManufacture(index: number) {
-    this.manufacturies.removeAt(index);
+    this.manufactures.removeAt(index);
   }
 
-  get manufacturies() {
-    return this.createElectricCarForm.get('manufacture') as FormArray;
+  get manufactures() {
+    return this.createElectricCarForm.get('manufactures') as FormArray;
+  }
+
+  showStateInput(index: number) {
+    this.stateInput[index] = !this.stateInput[index];
+  }
+
+  formErrorMsg= "";
+  formSuccessMsg= "";
+
+  private _checkIfFormInputsAreFilled(form: FormGroup) {
+    let formApproved= true;
+    
+    if (form.value.company === "" || form.value.name === "" || form.value.year === "") { formApproved= false; }
+    else { formApproved= true; }
+
+    let manufactureArr= form.value.manufactures;
+
+    let i= 0;
+    
+    manufactureArr.forEach((factory: Manufacture) => {
+      if (factory.country === "" || factory.city === "") { formApproved= false; }
+      if (this.stateInput[i] == true && factory.state === "") { formApproved= false; }
+      i++;
+    });
+
+    if (formApproved == false) {
+      this.formErrorMsg= "You have to fill all inputs!";
+    } else {
+      this.formErrorMsg= "";
+    }
+
+    return formApproved;
+  }
+
+  resetManufactureForm() {
+    for (let i = this.manufactures.length - 1; i > 0; i--) {
+      this.removeManufacture(i);
+    }
   }
 
   create(form: FormGroup) {
-    console.log(form.value);
     const car= new ElectricCar();
-    car.company= form.value.company;
-    car.name= form.value.model;
-    car.year= form.value.year;
-    car.manufacture= form.value.manufacture;
+    const formApproved = this._checkIfFormInputsAreFilled(form);
+    if (formApproved == true) {
 
-    this.electricCarService.createElectricCar(car)
-      .subscribe({
-        next: (car) => {
-          console.log(car);
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      });
+      car.company= form.value.company;
+      car.name= form.value.name;
+      car.year= form.value.year;
+      car.manufactures= form.value.manufactures;
+
+      this.electricCarService.createElectricCar(car)
+        .subscribe({
+          next: (car) => {
+            console.log(car);
+          },
+          error: (err) => {
+            console.log(err);
+          },
+          complete: () => { 
+            this.resetManufactureForm();
+            this.formSuccessMsg= "Car was created successfully!"; 
+          }
+        });
+      form.reset();
+    }
   }
 }
